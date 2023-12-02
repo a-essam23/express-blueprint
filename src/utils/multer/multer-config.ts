@@ -3,7 +3,7 @@ import fs from "fs";
 import multer_ from "multer";
 import { Request } from "express";
 import { AppError } from "@utils/appError";
-import { FileMimes, FileMimesTypes } from "@types";
+import { FileMimes, FileMimesTypes } from "@ctypes";
 type DestinationCallback = (error: Error | null, destination: string) => void;
 type FileNameCallback = (error: Error | null, filename: string) => void;
 interface FileFilterCallback {
@@ -39,22 +39,22 @@ const fileStorage = multer_.diskStorage({
 
 const fileFilter =
     (type: FileMimesTypes[]) =>
-    (
-        request: Request,
-        file: Express.Multer.File,
-        callback: FileFilterCallback
-    ): void => {
-        if (type?.length === 0) return callback(null, true);
-        let acceptTypes = type
-            .map((t) => FileMimes[t])
-            .join(" ")
-            .split(" ");
-        if (acceptTypes.includes(file.mimetype)) {
-            callback(null, true);
-        } else {
-            callback(AppError.createMulterError("Incorrect file type"));
-        }
-    };
+        (
+            request: Request,
+            file: Express.Multer.File,
+            callback: FileFilterCallback
+        ): void => {
+            if (type?.length === 0) return callback(null, true);
+            let acceptTypes = type
+                .map((t) => FileMimes[t])
+                .join(" ")
+                .split(" ");
+            if (acceptTypes.includes(file.mimetype)) {
+                callback(null, true);
+            } else {
+                callback(AppError.createMulterError("Incorrect file type"));
+            }
+        };
 export const multer = (type: FileMimesTypes[], sizeLimit?: number) =>
     multer_({
         storage: fileStorage,
